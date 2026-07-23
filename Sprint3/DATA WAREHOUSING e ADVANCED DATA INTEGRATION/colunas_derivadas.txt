@@ -1,0 +1,46 @@
+COLUNAS DERIVADAS - DATA FLOW: df_processa_incidentes
+Sprint 3 - Challenge Locaweb 2026
+Disciplina: Data Warehousing & Advanced Data Integration
+
+------------
+GRUPO: Dataway
+INTEGRANTES:
+- ISABELLA HEDER - RM561300
+- JOÃO VICTOR DALESSIO  - RM561050
+- PAULO LUCHINI - RM561477
+- ANGELO RABELLO - RM561926
+- MILENA BARBOSA - RM558913
+-------------
+
+
+| COLUNA              | FUNÇÃO AZURE ADF                                                              |
+|---------------------|-------------------------------------------------------------------------------|
+| tem_resolucao       | iif(isNull(Resolvido), 0, 1)                                                  |
+| Resolvido           | iifNull(Resolvido, Encerrado)                                                 |
+| tem_pai             | iif(isNull({Incidente Pai}), 0, 1)                                            |
+| tem_produto         | iif(isNull(Produto), 0, 1)                                                    |
+| Produto             | iif(isNull(Produto), iif({Aberto por}=='Monitoramento','MONITORING_AUTO','MANUAL_NAO_CLASSIFICADO'), Produto) |
+| tem_categoria       | iif(isNull(Categoria), 0, 1)                                                  |
+| Categoria           | iif(isNull(Categoria), iif(instr(Produto,'MONITORING')>0,'INFRA_Monitoramento','NAO_CLASSIFICADO_OUTROS'), Categoria) |
+| tem_subcategoria    | iif(isNull(Subcategoria), 0, 1)                                               |
+| Subcategoria        | iif(isNull(Subcategoria), concat(Categoria,'_Geral'), Subcategoria)           |
+| tem_item_config     | iif(isNull({Item de configuração}), 0, 1)                                     |
+| Item_Configuracao   | iifNull({Item de configuração}, 'SEM_IC')                                     |
+| tem_CF              | iif(isNull({Código de fechamento}) || {Código de fechamento}=='Outro', 0, 1)  |
+| Codigo_Fechamento   | iif(isNull({Código de fechamento}) || upper({Código de fechamento})=='OUTRO', iif(Status=='Sem Intervenção','AUTO_SEM_INTERVENCAO',iif(Status=='Encerrado Automaticamente','AUTO_ENCERRADO','NAO_DOCUMENTADO')), {Código de fechamento}) |
+| Solucao             | iif(isNull({Solução}), iif(Status=='Sem Intervenção','SEM_SOLUCAO',iif(!isNull(Resolvido),'NAO_DOCUMENTADA','SEM_SOLUCAO')), {Solução}) |
+| kpi_violado         | iif({KPI Violado?}=='SIM', 1, 0)                                              |
+| kpi_nao_aplicavel   | iif({Entrou para KPI?}=='NAO', 1, 0)                                          |
+| ANO_ABERTURA        | year(Aberto)                                                                  |
+| MES_ABERTURA        | month(Aberto)                                                                 |
+| DT_CARGA            | currentUTC()                                                                  |
+| NMN_USUARIO_CARGA   | 'RM561300'                                                                    |
+=================================================================
+
+DESCRIÇÃO:
+Este arquivo contém todas as funções de transformação utilizadas dentro 
+do Azure Data Factory para criar e enriquecer as colunas do dataset de 
+incidentes da Locaweb. As funções foram aplicadas em uma transformação 
+do tipo "Derived Column" no Data Flow df_processa_incidentes, permitindo 
+padronizar valores nulos, criar flags binárias e adicionar colunas de 
+auditoria (DT_CARGA, NMN_USUARIO_CARGA).
