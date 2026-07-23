@@ -1,0 +1,91 @@
+# Compose file para Podman (também compatível com Docker)
+# PredictOps 360 - Sprint 3
+
+x-airflow-common: &airflow-common
+  image: docker.io/apache/airflow:2.8.1-python3.11
+  environment:
+    AIRFLOW__CORE__EXECUTOR: LocalExecutor
+    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres-airflow:5432/airflow
+    AIRFLOW__CORE__FERNET_KEY: ''
+    AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
+    AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
+    AIRFLOW__API__AUTH_BACKENDS: 'airflow.api.auth.backend.basic_auth'
+    _PIP_ADDITIONAL_REQUIREMENTS: pandas==2.1.4 numpy==1.26.3 openpyxl==3.1.2 sqlalchemy==1.4.51 psycopg2-binary==2.9.9
+  volumes:
+    - ./dags:/opt/airflow/dags:Z
+    - ./scripts:/opt/airflow/scripts:Z
+    - ./sql:/opt/airflow/sql:Z
+    - ./data:/opt/airflow/data:Z
+    - ./logs:/opt/airflow/logs:Z
+    - ./backup:/opt/airflow/backup:Z
+  depends_on:
+    postgres-airflow:
+      condition: service_healthy
+
+services:
+  # Postgres do AIRFLOW (metadata)
+  postgres-airflow:
+    image: docker.io/library/postgres:15
+    container_name: postgres-airflow
+    environment:
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_DB: airflow
+    volumes:
+      - postgres-airflow-data:/var/lib/postgresql/data:Z
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "airflow"]
+      interval: 5s
+      retries: 5
+    ports:
+      - "5433:5432"
+
+  # Postgres ANALÍTICO (Bronze/Silver/Gold) ← SEU DATA WAREHOUSE
+  postgres-dw:
+    image: docker.io/library/postgres:15
+    container_name: postgres-dw
+    environment:
+      POSTGRES_USER: predictops
+      POSTGRES_PASSWORD: predictops123
+      POSTGRES_DB: predictops_dw
+    volumes:
+      - postgres-dw-data:/var/lib/postgresql/data:Z
+      - ./sql:/docker-entrypoint-initdb.d:Z
+      - ./backup:/backup:Z
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "predictops"]
+      interval: 5s
+      retries: 5
+
+  airflow-init:
+    <<: *airflow-common
+    container_name: airflow-init
+    entrypoint: /bin/bash
+    command:
+      - -c
+      - |
+        airflow db migrate
+        airflow users create \
+          --username admin --password admin \
+          --firstname Admin --lastname User \
+          --role Admin --email admin@predictops.com
+
+  airflow-webserver:
+    <<: *airflow-common
+    container_name: airflow-webserver
+    command: webserver
+    ports:
+      - "8080:8080"
+    restart: always
+
+  airflow-scheduler:
+    <<: *airflow-common
+    container_name: airflow-scheduler
+    command: scheduler
+    restart: always
+
+volumes:
+  postgres-airflow-data:
+  postgres-dw-data:
