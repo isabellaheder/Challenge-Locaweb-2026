@@ -9,7 +9,7 @@ Cloud Storage (Bronze) -> Cloud Storage (Silver) -> Modelos de Machine Learning 
 
 ### Estrutura do Projeto: 
 
-> IMPORTANTE: todos os códigos apresentados nesta pasta são uma versão mais rápida e direta dos códigos criados dentro dos notebooks python dentro do repositório
+> **IMPORTANTE**: todos os códigos apresentados nesta pasta são uma versão mais rápida e direta dos códigos criados dentro dos **notebooks python** dentro deste repositório git
 
 ```
 predictops/
