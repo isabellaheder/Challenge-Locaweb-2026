@@ -12,33 +12,47 @@ Estrutura do Projeto:
 ```
 predictops/
 
-01_bronze_para_silver.py
-
-pipeline.py
-
-publish_bigquery.py
-
-publish_silver_bigquery.py
-
-Dockerfile
-
-requirements.txt
-
-models/
-├── incidente_d1_d7.py
-├── sla_risco.py
-├── previsao_turno.py
-└── previsao_duracao.py
-
-artifacts/
-
-outputs/
+    01_bronze_para_silver.py      # tratamento dos dados (nulos, criação de flags etc)
+    
+    pipeline.py                   # orquestrador principal que executa todos os scripts da solução em sequência
+    
+    publish_bigquery.py           # publica os resultados dos modelos (arquivos CSV da pasta outputs) no BigQuery
+    
+    publish_silver_bigquery.py    # publica o dataset tratado da camada Silver (incidentes_tratados.parquet) na tabela incidentes do BigQuery
+    
+    Dockerfile                    # definição da imagem Docker utilizada pelo Cloud Run Job
+    
+    requirements.txt              # dependências necessárias para execução do pipeline
+    
+    models/    
+    ├── incidente_d1_d7.py        # previsão de volume de incidentes para D+1 e D+7
+    ├── sla_risco.py              # classificação de risco de violação de SLA/OLA
+    ├── previsao_turno.py         # previsão de quantidade de incidentes por turno
+    └── previsao_duracao.py       # previsão de tempo de resolução dos incidentes
+    └── cluster.py                # segmentação dos incidentes utilizando K-Means
+    
+    artifacts/                    # artefatos gerados pelos modelos
+    ├── modelo_d1.joblib
+    ├── modelo_d7.joblib
+    ├── modelo_sla.joblib
+    ├── modelo_turno.joblib
+    ├── modelo_duracao.joblib
+    └── modelo_cluster.joblib
+    
+    outputs/                       # resultados gerados pelos modelos
+    ├── previsao_incidentes_d1.csv
+    ├── previsao_incidentes_d7.csv
+    ├── previsao_sla.csv
+    ├── previsao_incidentes_turno.csv
+    ├── export_previsao_duracao.csv
+    └── clusters_incidentes.csv
 ```
 
 ## Como rodar?
-Para executar todo o pipeline: "python pipeline.py"
+Dentro do Cloud Shell Editor:
+- Para executar todo o pipeline: "python pipeline.py"
 
-Para executar todo o pipeline como um Job do Cloud Run:
+Para executar todo o pipeline como um >>**Job do Cloud Run**<<:
 
 1. Build da Imagem Docker (sempre que tiver alteração nos códigos deve-se fazer isso):
 ```
@@ -62,6 +76,9 @@ gcloud beta run jobs executions logs read \
     NOME_DA_EXECUCAO \
     --region=southamerica-east1
 ```
+Exemplo:
+
+<img width="600" alt="image" src="https://github.com/user-attachments/assets/592c520f-7a08-4f09-98a0-4e08f3ffa3b2" />
 
 ## Buckets Utilizados:
 
@@ -92,13 +109,11 @@ gcloud beta run jobs executions logs read \
 - Arquivo: models/previsao_duracao.py
 - Saída: export_previsao_duracao.csv
 
+#### Modelo 6 - Clusterização de Incidentes
+- Arquivo: cluster.py
+- Saída: clusters_incidentes.csv
+
 ## BigQuery:
 Dataset criado: predictops_gold
+<img width="800" alt="image" src="https://github.com/user-attachments/assets/5b628ea4-3b2c-45ce-b141-c4cb13ec0694" />
 
-Tabelas:
-- incidentes
-- previsao_d1
-- previsao_d7
-- previsao_sla
-- previsao_turno
-- previsao_duracao
