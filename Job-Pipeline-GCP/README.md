@@ -7,7 +7,7 @@ A solução processa dados de incidentes, treina modelos de Machine Learning, ge
 ## Pipeline
 Cloud Storage (Bronze) -> Cloud Storage (Silver) -> Modelos de Machine Learning -> Cloud Storage (Gold) -> BigQuery -> Power BI
 
-Estrutura do Projeto:
+Estrutura do Projeto: 
 
 ```
 predictops/
