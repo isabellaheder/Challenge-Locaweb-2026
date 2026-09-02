@@ -1,0 +1,10 @@
+pandas
+numpy
+scikit-learn
+imbalanced-learn
+pyarrow
+gcsfs
+openpyxl
+joblib
+google-cloud-storage
+google-cloud-bigquery
