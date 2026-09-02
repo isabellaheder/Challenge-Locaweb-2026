@@ -79,6 +79,7 @@ gcloud beta run jobs executions logs read \
 Exemplo:
 
 <img width="600" alt="image" src="https://github.com/user-attachments/assets/592c520f-7a08-4f09-98a0-4e08f3ffa3b2" />
+<img width="800" alt="image" src="https://github.com/user-attachments/assets/0be67ec3-754f-444c-b77a-f789d9d962b5" />
 
 ## Buckets Utilizados:
 
