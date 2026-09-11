@@ -118,5 +118,6 @@ Exemplo:
 
 ## BigQuery:
 Dataset criado: predictops_gold
-<img width="800" alt="image" src="https://github.com/user-attachments/assets/5b628ea4-3b2c-45ce-b141-c4cb13ec0694" />
+<img width="800" alt="image" src="https://github.com/user-attachments/assets/03494ff9-49d8-490b-9678-a8a81b22d1af" />
+
 
