@@ -7,6 +7,8 @@ ETAPAS = [
     "models/previsao_turno.py",
     "models/previsao_duracao.py",
     "models/cluster.py",
+    "models/cluster_nlp.py",
+    "models/previsao_demanda_cluster.py",
     "publish_silver_bigquery.py",
     "publish_bigquery.py"]
 
