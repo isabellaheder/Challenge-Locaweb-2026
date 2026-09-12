@@ -1,9 +1,0 @@
-# Credenciais — NÃO versionar chaves de serviço
-gcp-credentials.json
-bigquery-credentials.json
-*.json.key
-.env
-
-__pycache__/
-*.pyc
-.venv/
