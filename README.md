@@ -219,7 +219,7 @@ GCS bronze ──► GCS silver ──► Cloud Run Job ──► Python: ETL, t
 | Interface | Streamlit |
 
 O pipeline está em Job-Pipeline-GCP; a aplicação, em
-Solucao-streamlit. A interface **apenas lê**.
+Solucao-streamlit.
 
 ---
 
