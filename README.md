@@ -2,7 +2,7 @@
 
 **Antecipe o futuro, proteja o presente.**
 
-Challenge Locaweb · FIAP — *Artificial Intelligence e Deep Learning Application* · Equipe Dataway
+Challenge Locaweb · FIAP · Equipe Dataway
 
 ---
 
@@ -40,12 +40,13 @@ investigar, modelar, industrializar e entregar na tela.
 | **`Regras_Gerais_Challenge_Locaweb_Fev_2026.pdf`** | Enunciado e regras do desafio proposto pela Locaweb. Ponto de partida. |
 | **`LW-DATASET.xlsx`** | Dataset original entregue pela Locaweb, sem tratamento. |
 | **`Tratamento Dados/`** | Limpeza, padronização e *feature engineering*. Gera o `LW-DATASET-TRATADO`, que é a base usada por todo o resto do projeto. Inclui o dicionário de dados tratados. |
-| **`Explicacao-Salto-Incidentes/`** | Investigação do salto de volume a partir de set/2025. A conclusão mudou a forma de modelar — ver [Achados](#achados-do-estudo). |
-| **`Modelos/`** | Notebooks de treino, avaliação e comparação com baseline dos oito modelos. É aqui que vivem as métricas citadas neste README. |
-| **`Job-Pipeline-GCP/`** | Industrialização: o pipeline que roda no Google Cloud. Lê o dado, executa ETL, treina, gera as previsões e carrega tudo no BigQuery, orquestrado por Cloud Run Job + Cloud Scheduler. |
+| **`Explicacao-Salto-Incidentes/`** | Investigação do salto de volume a partir de set/2025. A conclusão mudou a forma de modelar: ver [Achados](#achados-do-estudo). |
+| **`Modelos/`** | Notebooks de treino, avaliação e comparação com baseline dos oito modelos |
+| **`Job-Pipeline-GCP/`** | o pipeline que roda no Google Cloud. Lê o dado, executa ETL, treina, gera as previsões e carrega tudo no BigQuery, orquestrado por Cloud Run Job + Cloud Scheduler. |
 | **`Solucao-streamlit/`** | **A aplicação.** Todo o front-end em Streamlit: painéis, jornal de turno, NL2SQL e assistentes de IA. Tem [README próprio](Solucao-streamlit/README.md) com instruções de build, run no Docker, variáveis de ambiente e estrutura do código. |
-| **`Sprint1/`** | Entrega da Sprint 1 — análise exploratória e primeiras hipóteses. |
-| **`Sprint3/`** | Entrega da Sprint 3 — modelagem preditiva e documentação da disciplina. |
+| **`Sprint1/`** | Entrega da Sprint 1 |
+| **`Sprint2/`** | Entrega da Sprint 2 |
+| **`Sprint3/`** | Entrega da Sprint 3 |
 
 ### Por onde começar a leitura
 
@@ -258,19 +259,6 @@ estiver aberto** (um chamado com 20% de risco às 9h pode estar com 80% às 15h)
 
 ---
 
-## Limitações conhecidas
-
-| Limitação | Próximo passo |
-|---|---|
-| O modelo de risco pontua só parte dos incidentes — há turnos sem chamado avaliado | Pontuar todos os incidentes elegíveis |
-| No threshold de 0,3 o alerta é sensível mas pouco denso: a precisão é baixa | Calibrar o corte pelo custo do alarme falso e publicar precisão ao lado do recall |
-| O D+7 erra mais que o D+1 e perde precisão nos picos | Features de calendário e tratamento explícito de feriados |
-| A carga é de arquivo, não incremental | Ingestão por `updated_at`, com upsert no BigQuery |
-| O login da aplicação não autentica de verdade | IAP ou provedor de identidade na frente da app |
-| A mudança de monitoramento em set/2025 desloca o histórico | Marcador de regime no treino e alerta de drift |
-
----
-
 ## Equipe — Dataway
 
 | Integrante | RM |
@@ -281,4 +269,4 @@ estiver aberto** (um chamado com 20% de risco às 9h pode estar com 80% às 15h)
 | Milena Oliveira | RM558913 |
 | Paulo Luchini | RM561477 |
 
-FIAP · Artificial Intelligence e Deep Learning Application · Challenge Locaweb 2026
+FIAP · Challenge Locaweb 2026
