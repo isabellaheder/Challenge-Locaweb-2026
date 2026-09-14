@@ -1,0 +1,6 @@
+flask
+scikit-learn
+numpy
+pandas
+mysql-connector-python
+opencensus-ext-azure
