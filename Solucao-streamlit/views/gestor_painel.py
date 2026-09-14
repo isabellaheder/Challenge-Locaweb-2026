@@ -4,6 +4,7 @@ Ordem por valor de negócio, depois dos cards:
 1. Risco de violação de OLA (onde está a multa)
 2. Projeções D+1 / D+7 (dimensionamento)
 3. Modos de falha — regimes (`clusters_incidentes`) e tipos de problema (`cluster_nlp`)
+3b. Tendência mensal de P2/P3 por produto e categoria (requisito de identificar tendência)
 4. OLA realizado e carga por equipe/produto
 5. Quando a demanda chega (turno e dia da semana)
 6. Saúde operacional do dia
@@ -166,6 +167,8 @@ def render_gestor_painel():
     _bloco_projecoes(prev_d1, prev_d7)
     st.divider()
     _bloco_modos_de_falha(df)
+    st.divider()
+    _bloco_tendencia_prioridade(df)
     st.divider()
     _bloco_sla_carga(df, sla)
     st.divider()
@@ -491,6 +494,42 @@ MTTR percebido.
                        "inclusive o previsto para D+1 — cai sobre o mesmo time.")
         else:
             st.info("Sem cruzamento tema × equipe disponível.")
+
+
+# ============================================================================
+# 3b. TENDÊNCIA DE PRIORIDADE ALTA (P2/P3) — POR PRODUTO E CATEGORIA
+# ============================================================================
+def _bloco_prio_dim(dim: str, key: str):
+    evol = data_prep.evolucao_prioridade(dim)
+    tend = data_prep.tendencia_prioridade(dim)
+    if evol.empty:
+        st.info(f"Sem histórico mensal de P2/P3 por {dim.lower()}.")
+        return
+    destaques = tend[tend["variacao_%"] > 50].index.tolist()[:4] if not tend.empty else []
+    V.plot(V.line_multi(evol.index, {c: evol[c] for c in evol.columns},
+                        destaques=destaques, height=380,
+                        titulo_y="incidentes P2/P3 no mês"),
+           key=f"{PAGE}_evol_prio_{key}")
+    if not tend.empty and tend["variacao_%"].notna().any():
+        top = tend.dropna(subset=["variacao_%"]).index[0]
+        var = float(tend.loc[top, "variacao_%"])
+        st.caption(f"Séries em destaque cresceram mais de 50% no último mês vs. a média dos 3 "
+                   f"anteriores. **{top}** lidera a variação ({V.br(var, 0, '%')} vs. média "
+                   f"anterior). Top {len(evol.columns)} {dim.lower()}s por volume de P2/P3.")
+    else:
+        st.caption(f"Volume mensal de incidentes P2/P3, top {len(evol.columns)} "
+                   f"{dim.lower()}s por volume.")
+
+
+def _bloco_tendencia_prioridade(df: pd.DataFrame):
+    T.section("Tendência mensal de P2 e P3 — por produto e categoria", ico="trend")
+    st.caption("Identifica onde a prioridade alta (P2/P3) está subindo mês a mês, antes que "
+               "vire volume consolidado no indicador agregado de OLA.")
+    tp1, tp2 = st.tabs(["Por produto", "Por categoria"])
+    with tp1:
+        _bloco_prio_dim("Produto", "prod")
+    with tp2:
+        _bloco_prio_dim("Categoria", "cat")
 
 
 # ============================================================================
