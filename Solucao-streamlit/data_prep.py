@@ -207,6 +207,46 @@ def tendencia_temas(janela: int = 3) -> pd.DataFrame:
 
 
 @st.cache_data(ttl=TTL, show_spinner=False)
+def evolucao_prioridade(dim: str, prioridades: tuple = ("P2", "P3"),
+                        meses: int = 8, top: int = 6) -> pd.DataFrame:
+    """Volume mensal de incidentes P2/P3 por `dim` (Produto ou Categoria).
+
+    Mesma lógica de `evolucao_temas`, mas filtrando pela prioridade em vez de
+    tema NLP — cobre o requisito de identificar tendência de P2/P3 sem
+    precisar de um modelo novo.
+    """
+    df = incidentes()
+    if df.empty or dim not in df.columns or "_P" not in df.columns:
+        return pd.DataFrame()
+    d = df[df["_P"].isin(prioridades) & df[dim].notna()].copy()
+    if d.empty or "Aberto" not in d.columns:
+        return pd.DataFrame()
+    top_vals = d[dim].value_counts().head(top).index
+    d = d[d[dim].isin(top_vals)]
+    d["_mes"] = pd.to_datetime(d["Aberto"], errors="coerce").dt.to_period("M").astype(str)
+    d["_cnt"] = 1
+    piv = (d.pivot_table(index="_mes", columns=dim, values="_cnt", aggfunc="sum")
+           .fillna(0).astype(int).sort_index())
+    return piv.tail(meses)
+
+
+@st.cache_data(ttl=TTL, show_spinner=False)
+def tendencia_prioridade(dim: str, prioridades: tuple = ("P2", "P3"),
+                         janela: int = 3) -> pd.DataFrame:
+    """Último mês contra a média dos anteriores, para P2/P3 por `dim`."""
+    piv = evolucao_prioridade(dim, prioridades)
+    if piv.empty or len(piv) < janela + 1:
+        return pd.DataFrame()
+    atual = piv.iloc[-1]
+    referencia = piv.iloc[-(janela + 1):-1].mean()
+    out = pd.DataFrame({"media_anterior": referencia.round(1), "mes_atual": atual})
+    out["variacao_%"] = np.where(out["media_anterior"] > 0,
+                                 (out["mes_atual"] / out["media_anterior"] - 1) * 100,
+                                 np.nan)
+    return out.sort_values("variacao_%", ascending=False)
+
+
+@st.cache_data(ttl=TTL, show_spinner=False)
 def regimes_base() -> pd.DataFrame:
     """`clusters_incidentes` cruzado com `incidentes`, com o regime já nomeado."""
     cl = load_prediction_table("clusters_incidentes")
