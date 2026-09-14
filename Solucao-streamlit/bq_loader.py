@@ -205,7 +205,7 @@ def render_data_source_banner(compact: bool = False) -> None:
     if src == "bigquery":
         st.success(
             f"**BigQuery conectado** — dados sincronizados de "
-            f"`{status['ref']}` ({rows_txt} linhas). Carga: {status['ts']}."
+            f"`{status['ref']}` ({rows_txt} linhas)."
         )
     elif src == "local":
         msg = (
