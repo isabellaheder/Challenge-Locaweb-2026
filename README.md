@@ -4,6 +4,10 @@
 
 Challenge Locaweb · FIAP · Equipe Dataway
 
+[Link Demo](https://predictops360-516228098940.southamerica-east1.run.app/) ·
+[Video Pitch](https://youtu.be/HcK-m2l-oio) ·
+[Vídeo Demo](https://youtu.be/EuH4-KFB-ec)
+
 ---
 
 ## Visão Geral
