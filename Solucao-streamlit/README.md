@@ -98,11 +98,6 @@ docker run --rm -p 8080:8080 \
 
 Abra <http://localhost:8080>.
 
-As chaves entram por volume, montadas como somente leitura. **Não as copie para dentro da
-imagem** — o `.dockerignore` e o `.gitignore` existem exatamente para isso.
-
-No Windows (PowerShell), troque `$(pwd)` por `${PWD}`.
-
 ### Local, sem Docker
 
 ```bash
